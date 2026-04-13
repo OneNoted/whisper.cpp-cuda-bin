@@ -9,7 +9,11 @@ asset=${5:?usage: update-aur-metadata.sh <pkgver> <pkgrel> <libggml-pkgver> <lib
 checksum=$(sha256sum "$asset" | awk '{print $1}')
 
 perl -0pi -e "s/^pkgver=.*/pkgver=${pkgver}/m; s/^pkgrel=.*/pkgrel=${pkgrel}/m; s/^_libggml_pkgver=.*/_libggml_pkgver=${libggml_pkgver}/m; s/^_libggml_pkgrel=.*/_libggml_pkgrel=${libggml_pkgrel}/m; s/^sha256sums=\('[^']*'\)/sha256sums=('${checksum}')/m" PKGBUILD
-makepkg --printsrcinfo > .SRCINFO
+
+if [[ ${EUID} -eq 0 ]]; then
+  su nobody -s /bin/sh -c 'makepkg --printsrcinfo' > .SRCINFO
+else
+  makepkg --printsrcinfo > .SRCINFO
+fi
 
 printf 'Updated PKGBUILD and .SRCINFO for %s-%s\n' "$pkgver" "$pkgrel"
-

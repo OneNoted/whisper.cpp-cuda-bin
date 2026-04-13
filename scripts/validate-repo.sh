@@ -6,6 +6,10 @@ bash -n PKGBUILD scripts/*.sh
 generated=$(mktemp)
 trap 'rm -f "$generated"' EXIT
 
-makepkg --printsrcinfo > "$generated"
-diff -u .SRCINFO "$generated"
+if [[ ${EUID} -eq 0 ]]; then
+  su nobody -s /bin/sh -c 'makepkg --printsrcinfo' > "$generated"
+else
+  makepkg --printsrcinfo > "$generated"
+fi
 
+diff -u .SRCINFO "$generated"
