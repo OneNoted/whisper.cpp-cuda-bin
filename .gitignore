@@ -1,0 +1,7 @@
+dist/
+pkg/
+src/
+*.pkg.tar.*
+*.tar.zst
+*.tar.zst.sha256
+

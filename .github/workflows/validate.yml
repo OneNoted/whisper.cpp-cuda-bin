@@ -1,0 +1,22 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validation dependencies
+        run: pacman -Syu --noconfirm diffutils
+
+      - name: Validate packaging metadata
+        run: ./scripts/validate-repo.sh

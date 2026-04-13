@@ -1,0 +1,85 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      pkgver:
+        description: Upstream whisper.cpp version
+        required: true
+        default: '1.8.4'
+      pkgrel:
+        description: Arch package release
+        required: true
+        default: '1'
+      libggml_pkgver:
+        description: Validated libggml-cuda-bin version
+        required: true
+        default: '0.9.11'
+      libggml_pkgrel:
+        description: Validated libggml-cuda-bin pkgrel
+        required: true
+        default: '1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: >
+          pacman -Syu --noconfirm
+          cmake
+          curl
+          cuda
+          diffutils
+          git
+          nvidia-utils
+          openblas
+          sdl2-compat
+          vulkan-icd-loader
+
+      - name: Build release asset
+        run: >
+          ./scripts/build-asset.sh
+          "${{ inputs.pkgver }}"
+          "${{ inputs.pkgrel }}"
+          "${{ inputs.libggml_pkgver }}"
+          "${{ inputs.libggml_pkgrel }}"
+
+      - name: Fetch matching libggml asset for smoke test
+        run: >
+          curl -fsSL
+          "https://github.com/OneNoted/libggml-cuda-bin/releases/download/v${{ inputs.libggml_pkgver }}-${{ inputs.libggml_pkgrel }}/libggml-cuda-bin-${{ inputs.libggml_pkgver }}-${{ inputs.libggml_pkgrel }}-x86_64.tar.zst"
+          -o
+          "/tmp/libggml-cuda-bin-${{ inputs.libggml_pkgver }}-${{ inputs.libggml_pkgrel }}-x86_64.tar.zst"
+
+      - name: Smoke-test release asset
+        run: >
+          ./scripts/smoke-asset.sh
+          "dist/whisper.cpp-cuda-bin-${{ inputs.pkgver }}-${{ inputs.pkgrel }}-x86_64.tar.zst"
+          "/tmp/libggml-cuda-bin-${{ inputs.libggml_pkgver }}-${{ inputs.libggml_pkgrel }}-x86_64.tar.zst"
+        shell: bash
+
+      - name: Refresh AUR metadata
+        run: >
+          ./scripts/update-aur-metadata.sh
+          "${{ inputs.pkgver }}"
+          "${{ inputs.pkgrel }}"
+          "${{ inputs.libggml_pkgver }}"
+          "${{ inputs.libggml_pkgrel }}"
+          "dist/whisper.cpp-cuda-bin-${{ inputs.pkgver }}-${{ inputs.pkgrel }}-x86_64.tar.zst"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.pkgver }}-${{ inputs.pkgrel }}
+          files: |
+            dist/whisper.cpp-cuda-bin-${{ inputs.pkgver }}-${{ inputs.pkgrel }}-x86_64.tar.zst
+            dist/whisper.cpp-cuda-bin-${{ inputs.pkgver }}-${{ inputs.pkgrel }}-x86_64.tar.zst.sha256
+            PKGBUILD
+            .SRCINFO
