@@ -9,7 +9,8 @@ on:
 
 jobs:
   metadata:
-    runs-on: ubuntu-latest
+    runs-on: apollo-whisper-cpp-cuda-bin
+    timeout-minutes: 20
     container:
       image: archlinux:base-devel
     steps:
