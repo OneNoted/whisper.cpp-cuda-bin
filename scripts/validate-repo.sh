@@ -15,8 +15,13 @@ print_srcinfo() {
   local temp_home
   temp_home=$(mktemp -d)
   trap 'rm -rf "$temp_home"' RETURN
-  HOME="$temp_home" setpriv --reuid 65534 --regid 65534 --clear-groups \
-    makepkg --printsrcinfo
+  HOME="$temp_home" \
+  BUILDDIR="$temp_home/build" \
+  LOGDEST="$temp_home/log" \
+  PKGDEST="$temp_home/pkg" \
+  SRCDEST="$temp_home/src" \
+  SRCPKGDEST="$temp_home/srcpkg" \
+    setpriv --reuid 65534 --regid 65534 --clear-groups makepkg --printsrcinfo
 }
 
 print_srcinfo > "$generated"
