@@ -15,6 +15,8 @@ print_srcinfo() {
   local temp_home
   temp_home=$(mktemp -d)
   trap 'rm -rf "$temp_home"' RETURN
+  mkdir -p "$temp_home"/build "$temp_home"/log "$temp_home"/pkg "$temp_home"/src "$temp_home"/srcpkg
+  chown -R 65534:65534 "$temp_home"
   HOME="$temp_home" \
   BUILDDIR="$temp_home/build" \
   LOGDEST="$temp_home/log" \
