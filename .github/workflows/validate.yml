@@ -11,14 +11,11 @@ jobs:
   metadata:
     runs-on: apollo-whisper-cpp-cuda-bin
     timeout-minutes: 20
-    container:
-      image: archlinux:base-devel
-      options: --network host
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install validation dependencies
-        run: pacman -Syu --noconfirm diffutils
-
       - name: Validate packaging metadata
-        run: ./scripts/validate-repo.sh
+        run: >
+          ./scripts/run-in-arch-container.sh
+          'pacman -Syu --noconfirm diffutils &&
+          ./scripts/validate-repo.sh'

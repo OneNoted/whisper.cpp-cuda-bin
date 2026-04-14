@@ -31,9 +31,6 @@ jobs:
   build:
     runs-on: apollo-whisper-cpp-cuda-bin
     timeout-minutes: 180
-    container:
-      image: archlinux:base-devel
-      options: --network host
     permissions:
       contents: write
     steps:
@@ -41,21 +38,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-
-      - name: Install build dependencies
-        run: >
-          pacman -Syu --noconfirm
-          cmake
-          curl
-          cuda
-          diffutils
-          jq
-          git
-          nvidia-utils
-          openssh
-          openblas
-          sdl2-compat
-          vulkan-icd-loader
 
       - name: Detect desired release
         id: plan
@@ -76,38 +58,39 @@ jobs:
 
       - name: Build release asset
         if: steps.plan.outputs.should_release == 'true'
-        run: >
-          ./scripts/build-asset.sh
-          "${{ steps.plan.outputs.pkgver }}"
-          "${{ steps.plan.outputs.pkgrel }}"
-          "${{ steps.plan.outputs.libggml_pkgver }}"
-          "${{ steps.plan.outputs.libggml_pkgrel }}"
-
-      - name: Fetch matching libggml asset for smoke test
-        if: steps.plan.outputs.should_release == 'true'
-        run: >
-          curl -fsSL
-          "https://github.com/OneNoted/libggml-cuda-bin/releases/download/v${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}/libggml-cuda-bin-${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}-x86_64.tar.zst"
-          -o
-          "/tmp/libggml-cuda-bin-${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}-x86_64.tar.zst"
-
-      - name: Smoke-test release asset
-        if: steps.plan.outputs.should_release == 'true'
-        run: >
-          ./scripts/smoke-asset.sh
-          "dist/${{ steps.plan.outputs.asset_name }}"
-          "/tmp/libggml-cuda-bin-${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}-x86_64.tar.zst"
-        shell: bash
-
-      - name: Refresh AUR metadata
-        if: steps.plan.outputs.should_release == 'true'
-        run: >
-          ./scripts/update-aur-metadata.sh
-          "${{ steps.plan.outputs.pkgver }}"
-          "${{ steps.plan.outputs.pkgrel }}"
-          "${{ steps.plan.outputs.libggml_pkgver }}"
-          "${{ steps.plan.outputs.libggml_pkgrel }}"
-          "dist/${{ steps.plan.outputs.asset_name }}"
+        run: |
+          ./scripts/run-in-arch-container.sh '
+            pacman -Syu --noconfirm \
+              cmake \
+              curl \
+              cuda \
+              diffutils \
+              jq \
+              git \
+              nvidia-utils \
+              openssh \
+              openblas \
+              sdl2-compat \
+              vulkan-icd-loader
+            curl -fsSL \
+              "https://github.com/OneNoted/libggml-cuda-bin/releases/download/v${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}/libggml-cuda-bin-${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}-x86_64.tar.zst" \
+              -o \
+              "/tmp/libggml-cuda-bin-${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}-x86_64.tar.zst"
+            ./scripts/build-asset.sh \
+              "${{ steps.plan.outputs.pkgver }}" \
+              "${{ steps.plan.outputs.pkgrel }}" \
+              "${{ steps.plan.outputs.libggml_pkgver }}" \
+              "${{ steps.plan.outputs.libggml_pkgrel }}"
+            ./scripts/smoke-asset.sh \
+              "dist/${{ steps.plan.outputs.asset_name }}" \
+              "/tmp/libggml-cuda-bin-${{ steps.plan.outputs.libggml_pkgver }}-${{ steps.plan.outputs.libggml_pkgrel }}-x86_64.tar.zst"
+            ./scripts/update-aur-metadata.sh \
+              "${{ steps.plan.outputs.pkgver }}" \
+              "${{ steps.plan.outputs.pkgrel }}" \
+              "${{ steps.plan.outputs.libggml_pkgver }}" \
+              "${{ steps.plan.outputs.libggml_pkgrel }}" \
+              "dist/${{ steps.plan.outputs.asset_name }}"
+          '
 
       - name: Commit release metadata
         if: steps.plan.outputs.should_release == 'true'
