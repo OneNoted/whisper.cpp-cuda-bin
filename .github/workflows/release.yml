@@ -99,8 +99,8 @@ jobs:
           repo_dir=${GITHUB_WORKSPACE:?}
 
           git config --global --add safe.directory "$repo_dir"
-          git -C "$repo_dir" config user.name "github-actions[bot]"
-          git -C "$repo_dir" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$repo_dir" config user.name "Jonatan Jonasson"
+          git -C "$repo_dir" config user.email "notes@madeingotland.com"
           git -C "$repo_dir" add PKGBUILD .SRCINFO
 
           if git -C "$repo_dir" diff --cached --quiet; then

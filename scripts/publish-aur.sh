@@ -13,8 +13,8 @@ git clone --depth 1 "$aur_remote" "$repo_dir"
 find "$repo_dir" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 cp PKGBUILD .SRCINFO "$repo_dir/"
 
-git -C "$repo_dir" config user.name "${GIT_AUTHOR_NAME:-github-actions[bot]}"
-git -C "$repo_dir" config user.email "${GIT_AUTHOR_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
+git -C "$repo_dir" config user.name "${GIT_AUTHOR_NAME:-Jonatan Jonasson}"
+git -C "$repo_dir" config user.email "${GIT_AUTHOR_EMAIL:-notes@madeingotland.com}"
 git -C "$repo_dir" add PKGBUILD .SRCINFO
 
 if git -C "$repo_dir" diff --cached --quiet; then
