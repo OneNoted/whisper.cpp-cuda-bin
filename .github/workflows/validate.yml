@@ -13,6 +13,7 @@ jobs:
     timeout-minutes: 20
     container:
       image: archlinux:base-devel
+      options: --network host
     steps:
       - uses: actions/checkout@v4
 
