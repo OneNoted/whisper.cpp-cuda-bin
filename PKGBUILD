@@ -29,7 +29,7 @@ _asset_name="${pkgname}-${pkgver}-${pkgrel}-x86_64.tar.zst"
 source=(
   "${_asset_name}::${url}/releases/download/v${pkgver}-${pkgrel}/${_asset_name}"
 )
-sha256sums=('a68b9123bc9a0f6d9427e2d4ca00a6fe0d20f67774b398a5db6a09a3dbfeee27')
+sha256sums=('4ad53fbbba020db9fe53e8315f79ca6ff82b54eda4fecca795390d0c4b65f6c3')
 
 package() {
   bsdtar -xf "${srcdir}/${_asset_name}" -C "${pkgdir}"

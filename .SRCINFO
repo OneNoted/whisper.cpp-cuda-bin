@@ -14,6 +14,6 @@ pkgbase = whisper.cpp-cuda-bin
 	conflicts = whisper.cpp
 	conflicts = whisper.cpp-cuda
 	source = whisper.cpp-cuda-bin-1.8.4-4-x86_64.tar.zst::https://github.com/OneNoted/whisper.cpp-cuda-bin/releases/download/v1.8.4-4/whisper.cpp-cuda-bin-1.8.4-4-x86_64.tar.zst
-	sha256sums = a68b9123bc9a0f6d9427e2d4ca00a6fe0d20f67774b398a5db6a09a3dbfeee27
+	sha256sums = 4ad53fbbba020db9fe53e8315f79ca6ff82b54eda4fecca795390d0c4b65f6c3
 
 pkgname = whisper.cpp-cuda-bin
