@@ -3,7 +3,7 @@
 pkgname=whisper.cpp-cuda-bin
 _upstream_pkgname=whisper.cpp
 pkgver=1.8.4
-pkgrel=3
+pkgrel=4
 _libggml_pkgver=0.10.0
 _libggml_pkgrel=1
 pkgdesc="Port of OpenAI's Whisper model in C/C++ with NVIDIA CUDA optimizations"
@@ -11,7 +11,7 @@ arch=('x86_64')
 url="https://github.com/OneNoted/whisper.cpp-cuda-bin"
 license=('MIT')
 depends=(
-  "libggml-cuda-bin=${_libggml_pkgver}-${_libggml_pkgrel}"
+  'libggml-cuda-bin'
   'cuda'
   'nvidia-utils'
   'sdl2-compat'
