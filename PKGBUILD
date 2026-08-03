@@ -2,7 +2,7 @@
 
 pkgname=whisper.cpp-cuda-bin
 _upstream_pkgname=whisper.cpp
-pkgver=1.8.5
+pkgver=1.9.1
 pkgrel=1
 _libggml_pkgver=0.13.1
 _libggml_pkgrel=1
@@ -29,7 +29,7 @@ _asset_name="${pkgname}-${pkgver}-${pkgrel}-x86_64.tar.zst"
 source=(
   "${_asset_name}::${url}/releases/download/v${pkgver}-${pkgrel}/${_asset_name}"
 )
-sha256sums=('48194f9845b799938e310818ac00597d12b1161e6ce026fd23ca853c6c08acd3')
+sha256sums=('1421c8fe54b92a0103c077fa5a068ed30d94fcf3a661d54914e29da3d81b0369')
 
 package() {
   bsdtar -xf "${srcdir}/${_asset_name}" -C "${pkgdir}"
