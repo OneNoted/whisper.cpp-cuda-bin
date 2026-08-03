@@ -28,6 +28,11 @@ curl -fsSL "${upstream_repo}/archive/refs/tags/v${pkgver}.tar.gz" | tar -xz -C "
 curl -fsSL "$libggml_url" -o "$work_dir/$libggml_asset"
 bsdtar -xf "$work_dir/$libggml_asset" -C "$sysroot"
 
+# talk-llama vendors llama.cpp sources tied to whisper.cpp's bundled ggml.
+# It is not compatible with WHISPER_USE_SYSTEM_GGML and is not packaged.
+sed -i '/^[[:space:]]*add_subdirectory(talk-llama)[[:space:]]*$/d' \
+  "$src_dir/examples/CMakeLists.txt"
+
 cmake \
   -B "$work_dir/build" \
   -S "$src_dir" \
@@ -58,4 +63,3 @@ TZ=UTC LC_ALL=C tar \
 
 sha256sum "$asset_path" > "${asset_path}.sha256"
 printf 'Built %s\n' "$asset_path"
-
