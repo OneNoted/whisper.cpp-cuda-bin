@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-bash -n PKGBUILD scripts/*.sh
+for script in PKGBUILD scripts/*.sh; do
+  bash -n "$script"
+done
 
 generated=$(mktemp)
 trap 'rm -f "$generated"' EXIT

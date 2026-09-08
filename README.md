@@ -18,6 +18,13 @@ Releases, and syncs the AUR package from the same workflow.
 
 ## Package details
 
+Scheduled releases select stable upstream version tags, skipping build snapshots,
+drafts, and prereleases. Every six hours CI also checks that the current GitHub
+release assets exist; missing assets trigger a rebuild with a new `pkgrel`.
+AUR metadata is synchronized on every successful run, including runs that do not
+need a rebuild. Failed builds stop before publication and are retried by the next
+scheduled run. Upstream compilation errors still require a maintainer fix.
+
 - target: `x86_64`
 - linked against: `libggml-cuda-bin=<validated version>`
 - runtime deps: `cuda`, `nvidia-utils`, `sdl2-compat`

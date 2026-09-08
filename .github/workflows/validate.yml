@@ -17,5 +17,6 @@ jobs:
       - name: Validate packaging metadata
         run: >
           ./scripts/run-in-arch-container.sh
-          'pacman -Syu --noconfirm diffutils &&
-          ./scripts/validate-repo.sh'
+          'pacman -Syu --noconfirm diffutils jq python &&
+          ./scripts/validate-repo.sh &&
+          python scripts/test-release.py'
